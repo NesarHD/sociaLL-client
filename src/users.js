@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import { Container, Row, Col } from "reactstrap";
-import ModalForm from "./Components/Modals/Modal";
+import { Container, Row, Col, Button } from "reactstrap";
 import DataTable from "./Components/Tables/DataTable";
 import { withRouter } from "react-router-dom";
 import Avatar from "react-avatar";
@@ -12,7 +11,7 @@ class Users extends Component {
     user: {},
   };
 
-  getUsersWithoutUser() {
+  getUsersWithoutUser = () => {
     fetch("http://localhost:3000/api/users/"+this.props.match.params.id)
       .then((response) => response.json())
       .then((data) => {
@@ -21,7 +20,7 @@ class Users extends Component {
       .catch((err) => console.log(err));
   }
 
-  getUser(id) {
+  getUser = (id) => {
     fetch("http://localhost:3000/api/user/" + id)
       .then((response) => response.json())
       .then((data) => {
@@ -29,19 +28,6 @@ class Users extends Component {
       })
       .catch((err) => console.log(err));
   }
-
-  updateState = (item) => {
-    const itemIndex = this.state.items.findIndex((data) => data.id === item.id);
-    const newArray = [
-      // destructure all items from beginning to the indexed item
-      ...this.state.items.slice(0, itemIndex),
-      // add the updated item to the array
-      item,
-      // add the rest of the items to the array from the index after the replaced item
-      ...this.state.items.slice(itemIndex + 1),
-    ];
-    this.setState({ items: newArray });
-  };
 
   componentDidMount() {
     this.getUsersWithoutUser();
@@ -70,9 +56,8 @@ class Users extends Component {
           <Col md="6">
             <DataTable
               userId={this.props.match.params.id}
-              items={this.state.users}
-              updateState={this.getItems}
-              refreshList={this.getUsersWithoutUser}
+              users={this.state.users}
+              refreshUsers={this.getUsersWithoutUser}
               view={"PROFILE"}
               {...this.props}
             />
@@ -82,10 +67,7 @@ class Users extends Component {
         <Row>
           <Col md="3"></Col>
           <Col>
-            <ModalForm
-              buttonLabel="Add Profile"
-              addItemToState={this.getUsersWithoutUser}
-            />
+            <Button buttonLabel="Back" onClick={e=>this.props.history.push("/")} >Back</Button>
           </Col>
           <Col md="3"></Col>
         </Row>

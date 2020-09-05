@@ -39,7 +39,26 @@ class DataTable extends Component {
     })
       .then((response) => response.json())
       .then(() => {
+        this.props.refreshUsers();
         // Add Notification as friend added
+      })
+      .catch((err) => console.log(err));
+  };
+
+  acceptFriend = (id) => {
+    fetch("http://localhost:3000/api/accept-friend/" + this.props.userId, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        friendId: id,
+      }),
+    })
+      .then((response) => response.json())
+      .then(() => {
+        this.props.refreshUsers();
+        // Add Notification as friend accepted
       })
       .catch((err) => console.log(err));
   };
@@ -76,6 +95,18 @@ class DataTable extends Component {
             )}
             {this.props.view === "PROFILE" ? (
               <div style={{ width: "110px" }}>
+                {user.friend_requested ? (
+                  user.friend_requested.includes(Number(this.props.userId)) ? (
+                    <Button onClick={() => this.acceptFriend(user.id)}>
+                      Accept
+                    </Button>
+                  ) : (
+                    ""
+                  )
+                ) : (
+                  ""
+                )}
+
                 {user.friend_request ? (
                   user.friend_request.includes(Number(this.props.userId)) ? (
                     <Button disabled>Requested</Button>
@@ -83,14 +114,42 @@ class DataTable extends Component {
                     ""
                   )
                 ) : (
+                  ""
+                )}
+
+                {user.friends ? (
+                  user.friends.includes(Number(this.props.userId)) ? (
+                    <Button disabled>Friends</Button>
+                  ) : (!user.friend_request && !user.friend_requested) ||
+                    (user.friend_request
+                      ? !user.friend_request.includes(Number(this.props.userId))
+                      : false) ||
+                    (user.friend_requested
+                      ? !user.friend_requested.includes(
+                          Number(this.props.userId)
+                        )
+                      : false) ? (
+                    <Button onClick={() => this.addFriend(user.id)}>
+                      Add Friend
+                    </Button>
+                  ) : (
+                    ""
+                  )
+                ) : (!user.friend_request && !user.friend_requested) ||
+                  (user.friend_request
+                    ? !user.friend_request.includes(Number(this.props.userId))
+                    : false) ||
+                  (user.friend_requested
+                    ? !user.friend_requested.includes(Number(this.props.userId))
+                    : false) ? (
                   <Button onClick={() => this.addFriend(user.id)}>
                     Add Friend
                   </Button>
+                ) : (
+                  ""
                 )}
-                
-                {/* <Button onClick={() => this.acceptFriend(item.id)}>
-                  Accept
-                </Button> */}
+
+                {}
               </div>
             ) : (
               ""
