@@ -48,10 +48,9 @@ class ModalForm extends Component {
           <ModalHeader toggle={this.toggle} close={closeBtn}>{title}</ModalHeader>
           <ModalBody>
             <AddEditForm
-              addItemToState={this.props.addItemToState}
-              updateState={this.props.updateState}
+              refreshUsers={this.props.refreshUsers}
               toggle={this.toggle}
-              item={this.props.item} />
+              user={this.props.user} />
           </ModalBody>
         </Modal>
       </div>

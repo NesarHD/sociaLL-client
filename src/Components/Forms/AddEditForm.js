@@ -23,7 +23,7 @@ class AddEditForm extends React.Component {
 
   submitFormAdd = (e) => {
     e.preventDefault();
-    fetch("http://localhost:3000/crud", {
+    fetch("http://localhost:3000/api/user", {
       method: "post",
       headers: {
         "Content-Type": "application/json",
@@ -35,20 +35,16 @@ class AddEditForm extends React.Component {
       }),
     })
       .then((response) => response.json())
-      .then((item) => {
-        if (Array.isArray(item)) {
-          this.props.addItemToState(item[0]);
-          this.props.toggle();
-        } else {
-          console.log("failure");
-        }
+      .then(() => {
+        this.props.refreshUsers();
+        this.props.toggle();
       })
       .catch((err) => console.log(err));
   };
 
   submitFormEdit = (e) => {
     e.preventDefault();
-    fetch("http://localhost:3000/crud", {
+    fetch("http://localhost:3000/api/user", {
       method: "put",
       headers: {
         "Content-Type": "application/json",
@@ -61,21 +57,17 @@ class AddEditForm extends React.Component {
       }),
     })
       .then((response) => response.json())
-      .then((item) => {
-        if (Array.isArray(item)) {
-          this.props.updateState(item[0]);
-          this.props.toggle();
-        } else {
-          console.log("failure");
-        }
+      .then(() => {
+        this.props.refreshUsers();
+        this.props.toggle();
       })
       .catch((err) => console.log(err));
   };
 
   componentDidMount() {
     // if item exists, populate the state with proper data
-    if (this.props.item) {
-      const { id, first, last, avatar } = this.props.item;
+    if (this.props.user) {
+      const { id, first, last, avatar } = this.props.user;
       this.setState({ id, first, last, avatar });
     }
   }
@@ -83,7 +75,7 @@ class AddEditForm extends React.Component {
   render() {
     return (
       <Form
-        onSubmit={this.props.item ? this.submitFormEdit : this.submitFormAdd}
+        onSubmit={this.props.user ? this.submitFormEdit : this.submitFormAdd}
       >
         <FormGroup>
           <Label for="first">First Name</Label>

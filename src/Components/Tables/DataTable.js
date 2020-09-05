@@ -5,8 +5,9 @@ import Avatar from "react-avatar";
 import { withRouter } from "react-router-dom";
 
 class DataTable extends Component {
-  deleteItem = (id) => {
-    fetch("http://localhost:3000/crud", {
+  // Delete a user from the list
+  deleteUser = (id) => {
+    fetch("http://localhost:3000/api/user", {
       method: "delete",
       headers: {
         "Content-Type": "application/json",
@@ -16,8 +17,8 @@ class DataTable extends Component {
       }),
     })
       .then((response) => response.json())
-      .then((item) => {
-        this.props.deleteItemFromState(id);
+      .then(() => {
+        this.props.refreshUsers();
       })
       .catch((err) => console.log(err));
   };
@@ -27,8 +28,7 @@ class DataTable extends Component {
   };
 
   addFriend = (id) => {
-    console.log("Send friend request");
-    fetch("http://localhost:3000/api/friend-request/"+this.props.userId, {
+    fetch("http://localhost:3000/api/friend-request/" + this.props.userId, {
       method: "post",
       headers: {
         "Content-Type": "application/json",
@@ -38,50 +38,63 @@ class DataTable extends Component {
       }),
     })
       .then((response) => response.json())
-      .then((item) => {
-        console.log(item)
-        // if (Array.isArray(item)) {
-        //   this.props.addItemToState(item[0]);
-        //   this.props.toggle();
-        // } else {
-        //   console.log("failure");
-        // }
+      .then(() => {
+        // Add Notification as friend added
       })
       .catch((err) => console.log(err));
-  }
+  };
 
   render() {
-    const items = this.props.items.map((item) => {
+    const users = this.props.users.map((user) => {
       return (
-        <tr key={item.id}>
+        <tr key={user.id}>
           <td>
             <Avatar
               size="50"
               round="50px"
-              src={item.avatar}
-              onClick={() => this.profile(item.id)}
+              src={user.avatar}
+              onClick={() => this.profile(user.id)}
               style={{ cursor: "pointer" }}
             />
           </td>
-          <td>{item.first}</td>
-          <td>{item.last}</td>
+          <td>{user.first}</td>
+          <td>{user.last}</td>
           <td>
-            {this.props.view == "HOME" ? <div style={{ width: "110px" }}>
-              <ModalForm
-                buttonLabel="Edit"
-                item={item}
-                updateState={this.props.updateState}
-              />{" "}
-              <Button color="danger" onClick={() => this.deleteItem(item.id)}>
-                Del
-              </Button>
-            </div> : ""}
-            {this.props.view == "PROFILE" ? <div style={{ width: "110px" }}>
-              <Button  onClick={() => this.addFriend(item.id)}>
-                Add Friend
-              </Button>
-            </div> : ""}
-            
+            {this.props.view === "HOME" ? (
+              <div style={{ width: "110px" }}>
+                <ModalForm
+                  buttonLabel="Edit"
+                  user={user}
+                  refreshUsers={this.props.refreshUsers}
+                />{" "}
+                <Button color="danger" onClick={() => this.deleteUser(user.id)}>
+                  Del
+                </Button>
+              </div>
+            ) : (
+              ""
+            )}
+            {this.props.view === "PROFILE" ? (
+              <div style={{ width: "110px" }}>
+                {user.friend_request ? (
+                  user.friend_request.includes(Number(this.props.userId)) ? (
+                    <Button disabled>Requested</Button>
+                  ) : (
+                    ""
+                  )
+                ) : (
+                  <Button onClick={() => this.addFriend(user.id)}>
+                    Add Friend
+                  </Button>
+                )}
+                
+                {/* <Button onClick={() => this.acceptFriend(item.id)}>
+                  Accept
+                </Button> */}
+              </div>
+            ) : (
+              ""
+            )}
           </td>
         </tr>
       );
@@ -97,7 +110,7 @@ class DataTable extends Component {
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody>{items}</tbody>
+        <tbody>{users}</tbody>
       </Table>
     );
   }

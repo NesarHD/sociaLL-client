@@ -12,8 +12,8 @@ class Users extends Component {
     user: {},
   };
 
-  getUsersWithoutUser(id) {
-    fetch("http://localhost:3000/api/users/"+id)
+  getUsersWithoutUser() {
+    fetch("http://localhost:3000/api/users/"+this.props.match.params.id)
       .then((response) => response.json())
       .then((data) => {
         this.setState({ users: data.users });
@@ -30,10 +30,6 @@ class Users extends Component {
       .catch((err) => console.log(err));
   }
 
-  addItemToState = (item) => {
-    this.getItems();
-  };
-
   updateState = (item) => {
     const itemIndex = this.state.items.findIndex((data) => data.id === item.id);
     const newArray = [
@@ -47,13 +43,8 @@ class Users extends Component {
     this.setState({ items: newArray });
   };
 
-  deleteItemFromState = (id) => {
-    const updatedItems = this.state.items.filter((item) => item.id !== id);
-    this.setState({ items: updatedItems });
-  };
-
   componentDidMount() {
-    this.getUsersWithoutUser(this.props.match.params.id);
+    this.getUsersWithoutUser();
     this.getUser(this.props.match.params.id);
   }
 
@@ -80,8 +71,8 @@ class Users extends Component {
             <DataTable
               userId={this.props.match.params.id}
               items={this.state.users}
-              updateState={this.updateState}
-              deleteItemFromState={this.deleteItemFromState}
+              updateState={this.getItems}
+              refreshList={this.getUsersWithoutUser}
               view={"PROFILE"}
               {...this.props}
             />
@@ -93,7 +84,7 @@ class Users extends Component {
           <Col>
             <ModalForm
               buttonLabel="Add Profile"
-              addItemToState={this.addItemToState}
+              addItemToState={this.getUsersWithoutUser}
             />
           </Col>
           <Col md="3"></Col>
