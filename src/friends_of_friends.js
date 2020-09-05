@@ -4,14 +4,14 @@ import DataTable from "./Components/Tables/DataTable";
 import { withRouter } from "react-router-dom";
 import Avatar from "react-avatar";
 
-class Users extends Component {
+class FriendsOfFriends extends Component {
   state = {
     users: [],
     user: {},
   };
 
-  getUsersWithoutUser = () => {
-    fetch("http://localhost:3000/api/users/" + this.props.match.params.id)
+  getFriendsOfFriends = () => {
+    fetch("http://localhost:3000/api/friends-of-friends/" + this.props.match.params.id)
       .then((response) => response.json())
       .then((data) => {
         this.setState({ users: data.users });
@@ -29,11 +29,11 @@ class Users extends Component {
   };
 
   friendsOfFriends = () => {
-    this.props.history.push("/friends-of-friends/"+this.props.match.params.id);
+    this.props.history.push("/");
   }
 
   componentDidMount() {
-    this.getUsersWithoutUser();
+    this.getFriendsOfFriends();
     this.getUser(this.props.match.params.id);
   }
 
@@ -88,4 +88,4 @@ class Users extends Component {
   }
 }
 
-export default withRouter(Users);
+export default withRouter(FriendsOfFriends);
